@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b6cf4" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <!-- Rounded Rect Background matching Navbar logo -->
+  <rect x="0" y="0" width="100" height="100" rx="27" fill="url(#bg-grad)" />
+  
+  <!-- Zap Icon centered (original from lucide-react viewBox="0 0 24 24") -->
+  <g transform="translate(22, 22) scale(2.33)">
+    <path fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2A.5.5 0 0 1 14 2.5h3.67a1 1 0 0 1 .89 1.46l-4.14 8.27A.5.5 0 0 0 14.86 13H19a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.88-.34.5.5 0 0 1-.1-.4l2.14-8.27A.5.5 0 0 0 10.14 15z" />
+  </g>
+</svg>

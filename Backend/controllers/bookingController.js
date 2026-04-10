@@ -1,0 +1,224 @@
+const Booking = require('../models/Booking');
+const Service = require('../models/Service');
+const nodemailer = require('nodemailer');
+// Helper: generate 4-digit OTP
+const generateOtp = () => String(Math.floor(1000 + Math.random() * 9000));
+
+// @desc    Log a new booking interaction (Call/WhatsApp)
+// @route   POST /api/bookings
+// @access  Private/User
+const createBooking = async (req, res) => {
+  try {
+    const { serviceId, interactionType } = req.body;
+
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    const booking = new Booking({
+      customer: req.user._id,
+      provider: service.provider,
+      service: service._id,
+      interactionType,
+      status: 'contacted'
+    });
+
+    const createdBooking = await booking.save();
+    res.status(201).json(createdBooking);
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server error creating booking' });
+  }
+};
+
+// @desc    Get logged in user's booking history
+// @route   GET /api/bookings/my-history
+// @access  Private
+const getMyBookings = async (req, res) => {
+  try {
+    let query = {};
+    if (req.user.role === 'provider') {
+      query.provider = req.user._id;
+    } else {
+      query.customer = req.user._id;
+    }
+
+    const bookings = await Booking.find(query)
+      .populate('provider', 'name email')
+      .populate('customer', 'name email mobileNumber')
+      .populate('service', 'serviceName serviceType location serviceCharges mobileNumber')
+      .sort({ createdAt: -1 });
+
+    // SECURITY: Only return the completionOtp to the customer. 
+    // The provider should NOT see it on their screen (they must ask the customer).
+    const sanitizedBookings = bookings.map(b => {
+      const bookingObj = b.toObject();
+      if (req.user.role === 'provider') {
+        delete bookingObj.completionOtp;
+      }
+      return bookingObj;
+    });
+
+    res.json(sanitizedBookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching booking history' });
+  }
+};
+
+// @desc    Provider requests job completion — generates OTP & sends to customer via WhatsApp
+// @route   POST /api/bookings/:id/request-complete
+// @access  Private/Provider
+const requestCompletion = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id)
+      .populate('customer', 'name email mobileNumber')
+      .populate('service', 'serviceName mobileNumber');  // mobileNumber = provider's contact
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    if (booking.provider.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    if (booking.status === 'completed') {
+      return res.status(400).json({ message: 'Booking is already completed' });
+    }
+
+    // Generate OTP (expires in 30 minutes)
+    const otp = generateOtp();
+    const expiry = new Date(Date.now() + 30 * 60 * 1000);
+
+    booking.status = 'completion_requested';
+    booking.completionOtp = otp;
+    booking.otpExpiry = expiry;
+    await booking.save();
+
+    const customer = booking.customer;
+    const providerName = req.user.name;
+    const serviceName = booking.service?.serviceName || 'Service';
+
+    // Construct the notification text
+    const emailSubject = `Work Completion OTP for ${serviceName}`;
+    const emailText = `Hello ${customer.name},\n\nYour service provider ${providerName} has requested to complete your booking for "${serviceName}".\n\nYour Work Completion OTP is: ${otp}\n\nPlease share this OTP with the provider only if the work has been completed to your satisfaction.\n\nThank you,\nSmart Local Service Finder Team`;
+
+    // 1. Send via Email
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Smart Local Service Finder" <${process.env.EMAIL_USER}>`,
+        to: customer.email,
+        subject: emailSubject,
+        text: emailText,
+      });
+      console.log(`Completion OTP sent via email to ${customer.email}`);
+    } catch (emailErr) {
+      console.error('Error sending completion OTP email:', emailErr);
+    }
+
+    // Real-time: notify the customer's socket room
+    if (booking.customer) {
+      const io = req.app.get('io');
+      if (io) {
+        io.to(`user_${booking.customer._id}`).emit('completion_requested', {
+          bookingId: booking._id,
+          serviceName: booking.service?.serviceName || 'Service',
+          message: 'Job completion requested! We have sent the OTP to your email. Please share it with the provider if satisfied.',
+        });
+      }
+    }
+
+    res.json({
+      message: 'OTP generated! Ask the customer for the code sent to their email.',
+      bookingId: booking._id,
+      customerName: booking.customer?.name || 'Customer',
+      serviceName: booking.service?.serviceName || 'Service',
+      providerName: req.user?.name || 'Provider',
+      expiresIn: '30 minutes',
+    });
+  } catch (error) {
+    console.error('Error in requestCompletion:', error);
+    res.status(500).json({ message: error.message || 'Server error requesting completion' });
+  }
+};
+
+// @desc    Provider enters OTP received from customer to confirm completion
+// @route   PUT /api/bookings/:id/complete
+// @access  Private/Provider
+const markBookingCompleted = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const booking = await Booking.findById(req.params.id)
+      .populate('customer', 'name email')
+      .populate('service', 'serviceName');
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Only the PROVIDER of this booking can verify with OTP
+    if (booking.provider.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized to verify this booking' });
+    }
+
+    if (booking.status === 'completed') {
+      return res.status(400).json({ message: 'Booking is already completed' });
+    }
+
+    if (booking.status !== 'completion_requested') {
+      return res.status(400).json({ message: 'You need to request completion first.' });
+    }
+
+    if (!otp) {
+      return res.status(400).json({ message: 'Please enter the OTP shared by the customer.' });
+    }
+
+    if (booking.completionOtp !== String(otp)) {
+      return res.status(400).json({ message: 'Invalid OTP. Please ask the customer for the correct code.' });
+    }
+
+    if (booking.otpExpiry && new Date() > booking.otpExpiry) {
+      return res.status(400).json({ message: 'OTP has expired. Please request completion again.' });
+    }
+
+    // Mark completed and clear OTP
+    booking.status = 'completed';
+    booking.completionOtp = null;
+    booking.otpExpiry = null;
+    const updatedBooking = await booking.save();
+
+    // Real-time: notify BOTH customer and provider rooms
+    const io = req.app.get('io');
+    if (io) {
+      const payload = {
+        bookingId: booking._id,
+        serviceName: booking.service?.serviceName,
+        customerName: booking.customer?.name,
+      };
+      io.to(`user_${booking.customer._id}`).emit('booking_completed', payload);
+      io.to(`user_${req.user._id}`).emit('booking_completed', payload);
+    }
+
+    res.json({
+      message: 'Job verified and marked as completed! The customer can now leave a review.',
+      booking: updatedBooking,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server error completing booking' });
+  }
+};
+
+module.exports = {
+  createBooking,
+  getMyBookings,
+  requestCompletion,
+  markBookingCompleted,
+};
