@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Pointing to the Node.js backend
+  baseURL: 'https://smart-local-service-finder-server.onrender.com/api', // Pointing to the Node.js backend
   headers: {
     'Content-Type': 'application/json',
   },

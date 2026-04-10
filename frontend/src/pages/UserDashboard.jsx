@@ -32,7 +32,7 @@ const UserDashboard = () => {
     else {
       fetchHistory();
       // Connect Socket.IO — join the user's personal room for real-time updates
-      const socket = io('http://localhost:5000', { transports: ['websocket'] });
+      const socket = io('https://smart-local-service-finder-server.onrender.com', { transports: ['websocket'] });
       socketRef.current = socket;
       socket.on('connect', () => {
         socket.emit('join_room', userInfo._id);

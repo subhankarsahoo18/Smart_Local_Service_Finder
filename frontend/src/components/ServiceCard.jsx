@@ -3,6 +3,9 @@ import { MapPin, Phone, MessageCircle, Star, IndianRupee } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || 'https://smart-local-service-finder-server.onrender.com';
+
+
 // Avatar color palette
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #3b6cf4, #7c3aed)',
@@ -96,7 +99,7 @@ const ServiceCard = ({ service }) => {
           background: 'linear-gradient(135deg, #eff6ff, #dce8ff)',
         }}>
           <img
-            src={`http://localhost:5000${service.serviceImage}`}
+            src={`${BACKEND_URL}${service.serviceImage}`}
             alt={service.serviceName}
             style={{
               width: '100%', height: '100%',

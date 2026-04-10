@@ -34,7 +34,7 @@ const Dashboard = () => {
     else {
       fetchData();
       // Connect Socket.IO and join the provider's personal room
-      const socket = io('http://localhost:5000');
+      const socket = io('https://smart-local-service-finder-server.onrender.com');
       socketRef.current = socket;
       socket.on('connect', () => {
         socket.emit('join_room', userInfo._id);
@@ -332,7 +332,7 @@ const Dashboard = () => {
                   }}>
                     {service.serviceImage ? (
                       <img
-                        src={`http://localhost:5000${service.serviceImage}`}
+                        src={`https://smart-local-service-finder-server.onrender.com${service.serviceImage}`}
                         alt="service"
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       />
