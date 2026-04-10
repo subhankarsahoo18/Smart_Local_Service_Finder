@@ -140,7 +140,7 @@ const ServiceDetails = () => {
                   {service.serviceImage ? (
                     <div style={{ height: '260px', overflow: 'hidden', position: 'relative', background: 'linear-gradient(135deg, #eff6ff, #dce8ff)' }}>
                       <img
-                        src={`https://smart-local-service-finder-server.onrender.com${service.serviceImage}`}
+                        src={service.serviceImage?.startsWith('http') ? service.serviceImage : `https://smart-local-service-finder-server.onrender.com${service.serviceImage}`}
                         alt={service.serviceName}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
                         onError={e => { e.target.parentNode.style.background = 'linear-gradient(135deg, #eff6ff, #dce8ff)'; e.target.style.display = 'none'; }}

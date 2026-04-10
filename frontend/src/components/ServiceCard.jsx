@@ -99,7 +99,7 @@ const ServiceCard = ({ service }) => {
           background: 'linear-gradient(135deg, #eff6ff, #dce8ff)',
         }}>
           <img
-            src={`${BACKEND_URL}${service.serviceImage}`}
+            src={service.serviceImage?.startsWith('http') ? service.serviceImage : `${BACKEND_URL}${service.serviceImage}`}
             alt={service.serviceName}
             style={{
               width: '100%', height: '100%',

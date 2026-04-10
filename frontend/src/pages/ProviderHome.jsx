@@ -276,7 +276,7 @@ const ProviderHome = () => {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       {service.serviceImage ? (
-                        <img src={`https://smart-local-service-finder-server.onrender.com${service.serviceImage}`} alt={service.serviceName}
+                        <img src={service.serviceImage?.startsWith('http') ? service.serviceImage : `https://smart-local-service-finder-server.onrender.com${service.serviceImage}`} alt={service.serviceName}
                           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                       ) : (
                         <span style={{ fontSize: '1.5rem' }}>🛠️</span>

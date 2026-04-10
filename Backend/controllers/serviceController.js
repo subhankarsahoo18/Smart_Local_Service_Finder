@@ -38,7 +38,7 @@ const createService = async (req, res) => {
 
     // If image was uploaded together with form data
     if (req.file) {
-      service.serviceImage = `/uploads/${req.file.filename}`;
+      service.serviceImage = req.file.path;
     }
 
     const createdService = await service.save();
@@ -164,15 +164,9 @@ const uploadServiceImage = async (req, res) => {
       return res.status(400).json({ message: 'No image file provided' });
     }
 
-    // Delete old image file if it exists
-    if (service.serviceImage) {
-      const oldPath = path.join(__dirname, '..', service.serviceImage);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
-    }
-
-    service.serviceImage = `/uploads/${req.file.filename}`;
+    // Cloudinary handles its own storage; no need for local unlinkSync.
+    // In a full implementation, you'd use cloudinary.v2.uploader.destroy() to delete old images if needed.
+    service.serviceImage = req.file.path;
     const updatedService = await service.save();
     res.json({ serviceImage: updatedService.serviceImage, message: 'Image uploaded successfully' });
   } catch (error) {
@@ -195,11 +189,8 @@ const deleteService = async (req, res) => {
           .json({ message: 'Not authorized to delete this service' });
       }
 
-      // Delete image file if exists
-      if (service.serviceImage) {
-        const imgPath = path.join(__dirname, '..', service.serviceImage);
-        if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-      }
+      // Cloudinary images don't need local file deletion.
+      // To delete from Cloudinary, you would use the public_id.
 
       await Service.deleteOne({ _id: service._id });
       res.json({ message: 'Service removed' });

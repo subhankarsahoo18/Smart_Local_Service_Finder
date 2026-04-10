@@ -1,38 +1,32 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv');
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+dotenv.config();
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename(req, file, cb) {
-    // e.g. service-<userId>-<timestamp>.jpg
-    const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
-    cb(null, `service-${req.user._id}-${Date.now()}${ext}`);
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'smart-local-services',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
+    public_id: (req, file) => {
+      // Create a unique filename: service-<userId>-<timestamp>
+      const name = `service-${req.user ? req.user._id : 'guest'}-${Date.now()}`;
+      return name;
+    },
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|webp|gif/;
-  const extOk = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mimeOk = allowed.test(file.mimetype);
-  if (extOk && mimeOk) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files (jpeg, jpg, png, webp, gif) are allowed'));
-  }
-};
-
 const upload = multer({
   storage,
-  fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 

@@ -332,7 +332,7 @@ const Dashboard = () => {
                   }}>
                     {service.serviceImage ? (
                       <img
-                        src={`https://smart-local-service-finder-server.onrender.com${service.serviceImage}`}
+                        src={service.serviceImage?.startsWith('http') ? service.serviceImage : `https://smart-local-service-finder-server.onrender.com${service.serviceImage}`}
                         alt="service"
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       />
