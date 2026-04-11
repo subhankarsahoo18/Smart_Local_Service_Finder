@@ -197,8 +197,8 @@ const Login = () => {
 
             {error && <div style={{ background: '#fff1f2', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '0.75rem', padding: '0.875rem 1rem', marginBottom: '1.25rem', fontSize: '0.875rem', color: '#dc2626' }}>{error}</div>}
 
-            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'center' }}>
-              <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} useOneTap={false} theme="outline" size="large" text="signin_with_google" shape="rectangular" width="370" />
+            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'center', width: '100%' }}>
+              <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} useOneTap={false} theme="outline" size="large" text="signin_with_google" shape="rectangular" />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>

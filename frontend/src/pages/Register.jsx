@@ -272,7 +272,6 @@ const Register = () => {
                 size="large"
                 text="signup_with_google"
                 shape="rectangular"
-                width="460"
               />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
