@@ -93,7 +93,7 @@ const ProviderHome = () => {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '28px 28px', opacity: 0.6, pointerEvents: 'none' }} />
 
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '2rem' }}>
+          <div className="provider-hero-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '2rem' }}>
             {/* Left: greeting + quick actions */}
             <div style={{ flex: 1, minWidth: '280px' }}>
               {/* Greeting badge */}
@@ -151,7 +151,7 @@ const ProviderHome = () => {
 
             {/* Right: Live stats grid */}
             {!loading && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', flexShrink: 0, minWidth: '260px' }}>
+              <div className="provider-hero-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', flexShrink: 0, minWidth: '260px' }}>
                 {[
                   { icon: <Briefcase size={20} color="white" />, value: services.length, label: 'Active Services', bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.15)' },
                   { icon: <Users size={20} color="white" />, value: totalContacts, label: 'Total Contacts', bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.15)' },
@@ -184,7 +184,7 @@ const ProviderHome = () => {
       <div className="container" style={{ marginTop: '-1.5rem', position: 'relative', zIndex: 3 }}>
 
         {/* ---- Quick Action Cards ---- */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+        <div className="quick-actions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
           {[
             { icon: '🛠️', label: 'Manage Services', desc: 'Edit or add listings', action: '/dashboard', color: '#4f46e5' },
             { icon: '📋', label: 'View Bookings', desc: 'See who contacted you', action: '/dashboard', color: '#0284c7' },
@@ -215,7 +215,7 @@ const ProviderHome = () => {
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
+        <div className="provider-content-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
 
           {/* ---- My Services Preview ---- */}
           <div>
@@ -407,7 +407,7 @@ const ProviderHome = () => {
         {/* =========================================================== */}
         {/* Platform Performance Banner                                  */}
         {/* =========================================================== */}
-        <div style={{
+        <div className="platform-banner-inner" style={{
           marginTop: '2.5rem',
           background: 'linear-gradient(135deg, #1e1b4b, #4f46e5)',
           borderRadius: '1.5rem', padding: '2.5rem',
@@ -428,7 +428,7 @@ const ProviderHome = () => {
               Our platform has 10,000+ active users searching for local services every day. Make sure your listing is complete to maximize visibility.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', flexShrink: 0 }}>
+          <div className="platform-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', flexShrink: 0 }}>
             {[
               { value: '10K+', label: 'Daily Users', icon: '👥' },
               { value: '3×', label: 'More Leads w/ Photo', icon: '📸' },

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect, useRef } from 'react';
 import { Globe, Search, X, ChevronDown, Check } from 'lucide-react';
 

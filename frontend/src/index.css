@@ -777,22 +777,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;
 }
 
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 768px) {
-  .search-box { flex-direction: column; border-radius: var(--radius-xl); padding: 1rem; }
-  .search-box > div { border-right: none !important; border-bottom: 1px solid var(--border-soft); padding-bottom: 0.75rem; }
-  .hero { padding: 4rem 0 3rem; }
-  .hero-floating-cards { display: none; }
-  .cta-banner { border-radius: var(--radius-xl); }
-  .section { padding: 3rem 0; }
-  .form-panel { padding: 1.5rem; }
-}
 
-@media (max-width: 480px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
-  .container { padding: 0 1rem; }
-}
 
 /* ===================== LEGACY COMPAT ===================== */
 /* Keep some dark classes for AOS compatibility */
@@ -856,3 +841,261 @@ body { top: 0px !important; }
 font[style] > font { background: inherit !important; }
 
 
+
+
+/* ===================== COMPREHENSIVE RESPONSIVE SYSTEM ===================== */
+
+/* ---- VERY SMALL: max 360px ---- */
+@media (max-width: 360px) {
+  .container { padding: 0 0.75rem; }
+  h1 { font-size: 1.5rem; }
+  .service-card-actions { grid-template-columns: 1fr !important; }
+  .quick-actions-grid { grid-template-columns: 1fr !important; }
+  .cta-btn-row { flex-direction: column !important; width: 100%; }
+  .cta-btn-row a, .cta-btn-row button { width: 100%; text-align: center; justify-content: center; }
+}
+
+/* ---- SMALL PHONES: max 480px ---- */
+@media (max-width: 480px) {
+  :root { --radius-2xl: 1.5rem; --radius-xl: 1.125rem; }
+  .container { padding: 0 1rem; }
+  h1 { font-size: clamp(1.65rem, 7vw, 2rem); }
+  h2 { font-size: clamp(1.35rem, 5.5vw, 1.75rem); }
+  h3 { font-size: 1.1rem; }
+  .section { padding: 2.5rem 0; }
+  .section-sm { padding: 1.75rem 0; }
+  .form-panel { padding: 1.25rem; }
+  .navbar { padding: 0.65rem 0; }
+  .hero { padding: 3.5rem 0 2.5rem; }
+  .hero-floating-cards { display: none !important; }
+  .search-box { flex-direction: column; border-radius: var(--radius-xl); padding: 0.875rem; gap: 0.625rem; }
+  .search-box > div { border-right: none !important; border-bottom: 1px solid var(--border-soft); padding-bottom: 0.625rem; }
+  .btn { padding: 0.55rem 1.1rem; font-size: 0.85rem; }
+  .step-card { padding: 1.75rem 1.25rem; }
+  .stat-card { padding: 1.25rem; }
+  .cta-banner { border-radius: var(--radius-xl); }
+  .page-wrapper { padding: 2rem 0; }
+  .tab-group { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; gap: 0.25rem; padding-bottom: 0.25rem; }
+  .tab-btn { padding: 0.6rem 0.875rem; font-size: 0.82rem; white-space: nowrap; }
+  .grid { gap: 1rem; }
+  .category-pill { padding: 0.5rem 0.9rem; font-size: 0.8rem; }
+  .how-it-works-grid { grid-template-columns: 1fr !important; }
+  .quick-actions-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .provider-hero-stats { grid-template-columns: repeat(2, 1fr) !important; min-width: unset !important; }
+}
+
+/* ---- MOBILE and SMALL TABLETS: max 768px ---- */
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+  .search-box { flex-direction: column; border-radius: var(--radius-xl); padding: 1rem; }
+  .search-box > div { border-right: none !important; border-bottom: 1px solid var(--border-soft); padding-bottom: 0.75rem; }
+  .hero { padding: 4rem 0 3rem; }
+  .hero-floating-cards { display: none; }
+  .cta-banner { border-radius: var(--radius-xl); }
+  .section { padding: 3rem 0; }
+  .form-panel { padding: 1.5rem; }
+  .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .provider-main-grid { grid-template-columns: 1fr !important; }
+  .provider-content-grid { grid-template-columns: 1fr !important; }
+  .dash-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .bookings-grid { grid-template-columns: 1fr !important; }
+  .service-list-row { flex-direction: column !important; align-items: flex-start !important; }
+  .service-list-actions { width: 100% !important; justify-content: flex-start !important; flex-wrap: wrap; }
+  .cta-inner-layout { flex-direction: column !important; align-items: flex-start !important; }
+  .cta-stats-grid { width: 100% !important; }
+  .platform-banner-inner { flex-direction: column !important; }
+  .platform-stats-grid { width: 100% !important; }
+  .quick-actions-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .provider-hero-inner { flex-direction: column !important; }
+  .provider-hero-stats { width: 100% !important; min-width: unset !important; grid-template-columns: repeat(2, 1fr) !important; }
+  .footer-grid { gap: 2rem !important; }
+  .user-dash-grid { grid-template-columns: 1fr !important; }
+  .dash-hero-title { font-size: 1.35rem !important; }
+  .user-dash-stats { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ---- TABLETS: 769px to 1023px ---- */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .container { padding: 0 1.25rem; }
+  .section { padding: 3.5rem 0; }
+  .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .provider-main-grid { grid-template-columns: 1fr !important; }
+  .quick-actions-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .provider-hero-stats { grid-template-columns: repeat(2, 1fr) !important; }
+  .dash-stats-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .bookings-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ---- DESKTOP: min 1024px ---- */
+@media (min-width: 1024px) {
+  .container { max-width: 1240px; }
+  .section { padding: 5rem 0; }
+  .how-it-works-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .provider-main-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important; }
+  .provider-content-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important; }
+  .dash-stats-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .bookings-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important; }
+}
+
+/* ---- LARGE DESKTOP: min 1280px ---- */
+@media (min-width: 1280px) {
+  .container { max-width: 1280px; padding: 0 2rem; }
+}
+
+/* ---- OVERFLOW PREVENTION ---- */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; }
+img, video { max-width: 100%; height: auto; }
+
+/* ===================== NAVBAR RESPONSIVE ===================== */
+/* Custom responsive handling for Navbar (complementing Tailwind md breakpoint) */
+@media (max-width: 767px) {
+  /* Ensure mobile toggle shows, desktop nav hides */
+  .navbar .nav-desktop { display: none !important; }
+  .navbar .nav-mobile-toggle { display: flex !important; }
+  
+  /* Login page card — smaller padding on mobile */
+  .login-card { padding: 1.75rem 1.25rem !important; }
+  
+  /* OTP inputs — tighter gap on mobile */
+  .otp-inputs-row { gap: 0.35rem !important; }
+  
+  /* Modal fix on small screens */
+  .modal-inner { padding: 1.5rem !important; border-radius: 1.25rem !important; }
+  
+  /* Register/ServiceDetail page sections */
+  .register-page { padding: 2rem 0; }
+  
+  /* Floating cards hide on mobile (Home hero) */
+  .floating-card { display: none !important; }
+}
+
+@media (min-width: 768px) {
+  /* Ensure desktop nav shows, mobile toggle hides */
+  .navbar .nav-desktop { display: flex !important; }
+  .navbar .nav-mobile-toggle { display: none !important; }
+}
+
+/* ===================== LOGIN RESPONSIVE ===================== */
+@media (max-width: 480px) {
+  /* Login card full-width with tight padding */
+  .login-wrapper { padding: 1.5rem 0.75rem; }
+  .login-card { max-width: 100% !important; padding: 1.75rem 1.25rem !important; }
+  
+  /* OTP inputs smaller */
+  .otp-box { width: 38px !important; height: 46px !important; font-size: 1.2rem !important; }
+}
+
+/* ===================== SERVICE DETAIL PAGE ===================== */
+@media (max-width: 768px) {
+  .service-detail-grid { grid-template-columns: 1fr !important; }
+  .service-detail-header { flex-direction: column; align-items: flex-start !important; }
+}
+
+/* ===================== FOOTER RESPONSIVE ===================== */
+@media (max-width: 640px) {
+  .footer-bottom { flex-direction: column; text-align: center; gap: 0.5rem; }
+}
+
+/* ===================== TABLE/CARD OVERFLOW FIXES ===================== */
+.card { word-break: break-word; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ===================== SAFE AREA FOR NOTCHED PHONES ===================== */
+@supports (padding: max(0px)) {
+  .navbar { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+  body { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+}
+
+/* ===================== SERVICE DETAIL GRID ===================== */
+@media (max-width: 768px) {
+  .service-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  /* Remove sticky sidebar position on mobile */
+  .service-detail-grid > div:last-child > div {
+    position: relative !important;
+    top: unset !important;
+  }
+}
+
+/* ===================== REGISTER PAGE ===================== */
+@media (max-width: 768px) {
+  .register-two-col { grid-template-columns: 1fr !important; }
+  .register-form-panel { padding: 1.5rem !important; }
+}
+@media (max-width: 480px) {
+  .register-form-panel { padding: 1.25rem !important; }
+  .register-role-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ===================== HOME PAGE HERO ===================== */
+@media (max-width: 768px) {
+  .hero-content { text-align: center; }
+  .hero-subtitle { max-width: 100% !important; }
+  .hero-action-row { justify-content: center !important; }
+  .hero-badges-row { justify-content: center !important; }
+}
+
+/* ===================== CATEGORY PILLS SCROLL ON MOBILE ===================== */
+@media (max-width: 640px) {
+  .category-pills-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    flex-wrap: nowrap !important;
+    display: flex;
+    gap: 0.5rem;
+    scrollbar-width: none;
+  }
+  .category-pills-container::-webkit-scrollbar { display: none; }
+}
+
+/* ===================== SERVICES GRID RESPONSIVE ===================== */
+@media (max-width: 640px) {
+  .services-grid { grid-template-columns: 1fr !important; }
+}
+@media (min-width: 641px) and (max-width: 1023px) {
+  .services-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ===================== OTP VERIFY ROW (Provider Dashboard) ===================== */
+/* Default: side by side (input + Verify button) */
+.otp-verify-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+/* On screens <= 420px: stack vertically so Verify button is never hidden */
+@media (max-width: 420px) {
+  .otp-verify-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .otp-verify-row input {
+    width: 100% !important;
+    text-align: center;
+    font-size: 1.5rem !important;
+    letter-spacing: 0.4em !important;
+  }
+  .otp-verify-row button {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+    justify-content: center;
+  }
+}
+
+/* On screens 421px - 540px: keep side by side but ensure button doesn't get hidden */
+@media (min-width: 421px) and (max-width: 540px) {
+  .otp-verify-row input {
+    min-width: 0;
+    flex: 1;
+  }
+  .otp-verify-row button {
+    flex-shrink: 0;
+    padding: 0.65rem 0.75rem !important;
+    font-size: 0.78rem !important;
+  }
+}

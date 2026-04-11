@@ -37,7 +37,7 @@ function ServiceOrb({ position, color, size = 1, speed = 1, delay = 0 }) {
 }
 
 // A floating ring/gear
-function ServiceRing({ position, color, size = 1, speed = 1 }) {
+function ServiceRing({ position, color, speed = 1 }) {
   const meshRef = useRef();
 
   useFrame((state) => {

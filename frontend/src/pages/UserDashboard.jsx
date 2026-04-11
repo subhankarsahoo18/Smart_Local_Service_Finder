@@ -120,7 +120,7 @@ const UserDashboard = () => {
             </div>
           </div>
           {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+          <div className="user-dash-stats dash-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
             {[
               { label: 'Total Bookings', value: bookings.length, icon: '📋' },
               { label: 'Completed', value: bookings.filter(b => b.status === 'completed').length, icon: '✅' },
@@ -147,10 +147,9 @@ const UserDashboard = () => {
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
+          <div className="bookings-grid user-dash-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
             {bookings.map((booking, i) => {
               const isCompleted = booking.status === 'completed';
-              const avatarColor = AVATAR_COLORS[(booking.service?.providerName?.charCodeAt(0) || i) % AVATAR_COLORS.length];
 
               return (
                 <div key={booking._id} data-aos="fade-up" data-aos-delay={`${Math.min(i * 60, 300)}`} style={{

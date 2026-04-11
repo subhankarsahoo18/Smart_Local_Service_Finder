@@ -189,7 +189,7 @@ const Dashboard = () => {
                 <BarChart2 size={24} color="white" />
               </div>
               <div>
-                <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'white', fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em' }}>Provider Dashboard</h1>
+                <h1 className="dash-hero-title" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'white', fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em' }}>Provider Dashboard</h1>
                 <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
                   Hi {userInfo?.name}! Manage your listings and requests.
                 </p>
@@ -210,7 +210,7 @@ const Dashboard = () => {
           </div>
 
           {/* Overview stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+          <div className="dash-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
             {[
               { label: 'My Listings', value: services.length, icon: '🛠️' },
               { label: 'Total Bookings', value: bookings.length, icon: '📋' },
@@ -314,7 +314,7 @@ const Dashboard = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {services.map((service, i) => (
-                <div key={service._id} data-aos="fade-up" data-aos-delay={`${i * 60}`} style={{
+                <div key={service._id} data-aos="fade-up" data-aos-delay={`${i * 60}`} className="service-list-row" style={{
                   background: 'white', borderRadius: '1.25rem', border: '1px solid rgba(59,108,244,0.08)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.05)', padding: '1.25rem 1.5rem',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap',
@@ -357,7 +357,7 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div className="service-list-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                     {/* Hidden file input */}
                     <input
                       ref={el => imageInputRefs.current[service._id] = el}
@@ -418,7 +418,7 @@ const Dashboard = () => {
               <p style={{ color: '#64748b', fontSize: '0.9rem' }}>When customers contact you, they will appear here.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
+            <div className="bookings-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
               {bookings.map((booking, i) => {
                 const isCompleted = booking.status === 'completed';
                 const isPending = booking.status === 'completion_requested';
@@ -482,7 +482,7 @@ const Dashboard = () => {
                                 <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Ask the customer for the code they received in their email.</span>
                               </p>
 
-                              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                              <div className="otp-verify-row" style={{ display: 'flex', gap: '0.5rem', alignItems: 'stretch' }}>
                                 <input
                                   type="text"
                                   maxLength={4}
@@ -496,6 +496,7 @@ const Dashboard = () => {
                                     borderRadius: '0.625rem', background: 'white',
                                     fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.25em',
                                     textAlign: 'center', outline: 'none', color: '#0f172a', fontFamily: 'monospace',
+                                    minWidth: 0,
                                   }}
                                 />
                                 <button
@@ -505,8 +506,9 @@ const Dashboard = () => {
                                     padding: '0.65rem 1rem', borderRadius: '0.625rem',
                                     background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                                     color: 'white', border: 'none', fontWeight: 700, fontSize: '0.82rem',
-                                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem',
+                                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem',
                                     boxShadow: '0 3px 10px rgba(79,70,229,0.3)', whiteSpace: 'nowrap',
+                                    flexShrink: 0,
                                   }}
                                 >
                                   {otpState.verifying

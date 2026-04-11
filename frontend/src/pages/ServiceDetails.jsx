@@ -12,6 +12,10 @@ const AVATAR_COLORS = [
 
 const ServiceDetails = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [service, setService] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [userInfo, setUserInfo] = useState(JSON.parse(localStorage.getItem('userInfo')) || null);
   
   // Mobile Prompt State
@@ -130,7 +134,7 @@ const ServiceDetails = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1.5rem' }}>
 
             {/* Two-column layout on larger screens */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem' }}>
+            <div className="service-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem' }}>
 
               {/* Left Column */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

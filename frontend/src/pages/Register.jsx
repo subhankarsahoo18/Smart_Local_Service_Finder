@@ -114,7 +114,7 @@ const Register = () => {
           const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`);
           const data = await resp.json();
           if (data?.address) setLocation(data.address.city || data.address.town || data.address.state_district || 'Your Location');
-        } catch { } finally { setIsLocating(false); }
+        } catch (err) { console.error(err); } finally { setIsLocating(false); }
       },
       () => { alert('Could not get location.'); setIsLocating(false); }
     );
@@ -163,7 +163,7 @@ const Register = () => {
         }
       }
 
-      navigate('/'); window.location.reload();
+      window.location.href = '/';
     } catch (err) {
       setError(err.response?.data?.message || 'Verification failed. Please try again.');
       setOtpLoading(false);
@@ -209,8 +209,7 @@ const Register = () => {
         return;
       }
       localStorage.setItem('userInfo', JSON.stringify(data));
-      navigate('/');
-      window.location.reload();
+      window.location.href = '/';
     } catch (err) {
       setError(err.response?.data?.message || 'Google sign-up failed. Please try again.');
     }

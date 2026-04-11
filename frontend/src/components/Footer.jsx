@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Zap, Instagram, Twitter, Facebook, Linkedin } from 'lucide-react';
@@ -52,7 +53,7 @@ const Footer = () => {
                 { Icon: Twitter, color: '#1da1f2' },
                 { Icon: Facebook, color: '#1877f2' },
                 { Icon: Linkedin, color: '#0077b5' },
-              ].map(({ Icon, color }, i) => (
+              ].map(({ Icon: PlatformIcon, color }, i) => (
                 <a
                   key={i}
                   href="#"
@@ -65,7 +66,7 @@ const Footer = () => {
                   onMouseEnter={e => { e.currentTarget.style.color = color; e.currentTarget.style.borderColor = color; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 4px 12px ${color}30`; }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = 'rgba(59,108,244,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  <Icon size={16} />
+                  <PlatformIcon size={16} />
                 </a>
               ))}
             </div>

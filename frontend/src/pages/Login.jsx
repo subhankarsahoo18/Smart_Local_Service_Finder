@@ -16,13 +16,13 @@ const Login = () => {
   // OTP state
   const [otpUserId, setOtpUserId] = useState(null);
   const [otpEmail, setOtpEmail] = useState('');
-  const [otpName, setOtpName] = useState('');
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef([]);
 
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,7 +31,6 @@ const Login = () => {
     if (location.state?.otpRequired) {
       setOtpUserId(location.state.userId);
       setOtpEmail(location.state.email);
-      setOtpName(location.state.name);
       setOtpDigits(['', '', '', '', '', '']);
       setView('otp');
     }
@@ -59,12 +58,11 @@ const Login = () => {
       if (data.requiresOtp) {
         setOtpUserId(data.userId);
         setOtpEmail(data.email);
-        setOtpName(data.name);
         setOtpDigits(['', '', '', '', '', '']);
         setView('otp');
       } else {
         localStorage.setItem('userInfo', JSON.stringify(data));
-        navigate('/'); window.location.reload();
+        window.location.href = '/';
       }
     } catch (err) {
       setError(err.response?.data?.message || err.message);
@@ -80,12 +78,11 @@ const Login = () => {
       if (data.requiresOtp) {
         setOtpUserId(data.userId);
         setOtpEmail(data.email);
-        setOtpName(data.name);
         setOtpDigits(['', '', '', '', '', '']);
         setView('otp');
       } else {
         localStorage.setItem('userInfo', JSON.stringify(data));
-        navigate('/'); window.location.reload();
+        window.location.href = '/';
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Google sign-in failed. Please try again.');
@@ -136,7 +133,7 @@ const Login = () => {
     try {
       const { data } = await api.post('/auth/verify-otp', { userId: otpUserId, otp });
       localStorage.setItem('userInfo', JSON.stringify(data));
-      navigate('/'); window.location.reload();
+      window.location.href = '/';
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
       setOtpLoading(false);

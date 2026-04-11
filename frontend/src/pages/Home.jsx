@@ -170,11 +170,7 @@ const FloatingCard = ({ pro }) => {
 };
 
 const Home = () => {
-  // ---- Role guard: providers get a different home page ----
-  const _userInfoRaw = localStorage.getItem('userInfo');
-  const _userInfo = _userInfoRaw ? JSON.parse(_userInfoRaw) : null;
-  if (_userInfo?.role === 'provider') return <ProviderHome />;
-  // ---------------------------------------------------------
+
 
   const routerLocation = useLocation();
   const isServicesPage = routerLocation.pathname === '/services';
@@ -191,6 +187,8 @@ const Home = () => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
+
+
 
   const fetchServices = async (overrideType) => {
     try {
@@ -270,6 +268,12 @@ const Home = () => {
   };
 
   const handleSearch = (e) => { e.preventDefault(); fetchServices(); };
+
+  // ---- Role guard: providers get a different home page ----
+  const _userInfoRaw = localStorage.getItem('userInfo');
+  const _userInfo = _userInfoRaw ? JSON.parse(_userInfoRaw) : null;
+  if (_userInfo?.role === 'provider') return <ProviderHome />;
+  // ---------------------------------------------------------
 
   return (
     <>
@@ -773,7 +777,7 @@ const Home = () => {
                 </div>
                 <div className="divider" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+              <div className="how-it-works-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
                 {HOW_IT_WORKS.map(({ step, icon, title, desc }, i) => (
                   <div key={step} className="step-card" data-aos="fade-up" data-aos-delay={`${i * 100}`}>
                     <div style={{ position: 'relative', width: 'fit-content', margin: '0 auto 1.25rem' }}>
@@ -830,7 +834,7 @@ const Home = () => {
                 <p style={{ color: '#64748b' }}>Try adjusting your search filters or exploring a different area.</p>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.25rem' }}>
+              <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.25rem' }}>
                 {services.map((service, index) => (
                   <div key={service._id} data-aos="fade-up" data-aos-delay={`${Math.min(index * 60, 400)}`}>
                     <ServiceCard service={service} />
@@ -847,41 +851,43 @@ const Home = () => {
         {!isServicesPage && (
           <section style={{ padding: '4rem 0 5rem', background: 'var(--bg)' }}>
             <div className="container">
-              <div className="cta-banner" data-aos="fade-up" style={{ padding: '4rem 3rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '2rem' }}>
-                <div style={{ flex: 1, minWidth: '280px' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem' }}>
-                    Join 10,000+ Users
-                  </div>
-                  <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: '1rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    Explore Top-Rated<br />Professionals Today
-                  </h2>
-                  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.75rem', maxWidth: '420px' }}>
-                    From plumbing to electrical fixes, find and connect with trusted local service providers in minutes.
-                  </p>
-                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    <a href="/register" className="btn btn-white" style={{ padding: '0.75rem 1.75rem', fontWeight: 700 }}>
-                      Get Started Free
-                    </a>
-                    <a href="/services" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.9)', fontWeight: 600, fontSize: '0.9rem', padding: '0.75rem 1.25rem', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: '9999px', textDecoration: 'none', transition: 'all 0.2s' }}>
-                      Browse Services →
-                    </a>
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', flexShrink: 0 }}>
-                  {[
-                    { value: '10K+', label: 'Active Users', icon: '👥' },
-                    { value: '4.9★', label: 'Average Rating', icon: '⭐' },
-                    { value: '500+', label: 'Professionals', icon: '🏆' },
-                    { value: '24/7', label: 'Support', icon: '💬' },
-                  ].map(({ value, label, icon }) => (
-                    <div key={label} style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '1rem', padding: '1.25rem', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
-                      <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{icon}</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', lineHeight: 1.1 }}>{value}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.2rem' }}>{label}</div>
+              <div className="cta-banner" data-aos="fade-up">
+                <div className="cta-inner-layout" style={{ padding: '4rem 3rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '2rem' }}>
+                  <div style={{ flex: 1, minWidth: '280px' }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem' }}>
+                      Join 10,000+ Users
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: '1rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      Explore Top-Rated<br />Professionals Today
+                    </h2>
+                    <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.75rem', maxWidth: '420px' }}>
+                      From plumbing to electrical fixes, find and connect with trusted local service providers in minutes.
+                    </p>
+                    <div className="cta-btn-row" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      <a href="/register" className="btn btn-white" style={{ padding: '0.75rem 1.75rem', fontWeight: 700 }}>
+                        Get Started Free
+                      </a>
+                      <a href="/services" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.9)', fontWeight: 600, fontSize: '0.9rem', padding: '0.75rem 1.25rem', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: '9999px', textDecoration: 'none', transition: 'all 0.2s' }}>
+                        Browse Services →
+                      </a>
+                    </div>
+                  </div>
+                  <div className="cta-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', flexShrink: 0 }}>
+                    {[
+                      { value: '10K+', label: 'Active Users', icon: '👥' },
+                      { value: '4.9★', label: 'Average Rating', icon: '⭐' },
+                      { value: '500+', label: 'Professionals', icon: '🏆' },
+                      { value: '24/7', label: 'Support', icon: '💬' },
+                    ].map(({ value, label, icon }) => (
+                      <div key={label} style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '1rem', padding: '1.25rem', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
+                        <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{icon}</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', lineHeight: 1.1 }}>{value}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.2rem' }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div> {/* cta-inner-layout */}
+              </div> {/* cta-banner */}
             </div>
           </section>
         )}
