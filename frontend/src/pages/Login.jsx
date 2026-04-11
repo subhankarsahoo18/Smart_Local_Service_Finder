@@ -62,7 +62,7 @@ const Login = () => {
         setView('otp');
       } else {
         localStorage.setItem('userInfo', JSON.stringify(data));
-        window.location.href = '/';
+        window.location.href = data.role === 'provider' ? '/dashboard' : '/';
       }
     } catch (err) {
       setError(err.response?.data?.message || err.message);
@@ -82,7 +82,7 @@ const Login = () => {
         setView('otp');
       } else {
         localStorage.setItem('userInfo', JSON.stringify(data));
-        window.location.href = '/';
+        window.location.href = data.role === 'provider' ? '/dashboard' : '/';
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Google sign-in failed. Please try again.');
@@ -133,7 +133,7 @@ const Login = () => {
     try {
       const { data } = await api.post('/auth/verify-otp', { userId: otpUserId, otp });
       localStorage.setItem('userInfo', JSON.stringify(data));
-      window.location.href = '/';
+      window.location.href = data.role === 'provider' ? '/dashboard' : '/';
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
       setOtpLoading(false);

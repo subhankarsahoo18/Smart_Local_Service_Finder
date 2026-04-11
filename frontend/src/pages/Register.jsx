@@ -160,10 +160,9 @@ const Register = () => {
           await api.put(`/services/${data.serviceId}/image`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         } catch (imgErr) {
           console.warn('Image upload failed but account created:', imgErr.message);
-        }
       }
 
-      window.location.href = '/';
+      window.location.href = role === 'provider' ? '/dashboard' : '/';
     } catch (err) {
       setError(err.response?.data?.message || 'Verification failed. Please try again.');
       setOtpLoading(false);
@@ -209,7 +208,7 @@ const Register = () => {
         return;
       }
       localStorage.setItem('userInfo', JSON.stringify(data));
-      window.location.href = '/';
+      window.location.href = data.role === 'provider' ? '/dashboard' : '/';
     } catch (err) {
       setError(err.response?.data?.message || 'Google sign-up failed. Please try again.');
     }

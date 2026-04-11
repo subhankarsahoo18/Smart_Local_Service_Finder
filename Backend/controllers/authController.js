@@ -274,18 +274,13 @@ const googleAuth = async (req, res) => {
       });
     }
 
-    // ── Existing users: send OTP for extra security ──
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.otp = otp;
-    user.otpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 min
-    await user.save();
-    await sendOtpEmail(user.email, user.name, otp);
-
+    // ── Existing users: direct login ──
     return res.json({
-      requiresOtp: true,
-      userId: user._id,
-      email: user.email,
-      name: user.name,
+      _id: user._id, name: user.name, email: user.email,
+      role: user.role, mobileNumber: user.mobileNumber || null,
+      token: generateToken(user._id),
+      isGoogleUser: true, googleId: user.googleId,
+      hasPassword: !!user.password,
     });
   } catch (error) {
     console.error('Google Auth Error:', error.message);
