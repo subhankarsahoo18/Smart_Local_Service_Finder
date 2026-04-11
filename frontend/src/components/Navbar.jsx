@@ -307,7 +307,7 @@ const Navbar = () => {
 
 
           {/* Desktop Nav */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="hidden md:flex">
+          <nav style={{ alignItems: 'center', gap: '1.5rem' }} className="hidden md:flex">
             <Link to="/" style={{ fontWeight: 500, fontSize: '0.9rem', color: '#64748b', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#3b6cf4'} onMouseLeave={e => e.target.style.color = '#64748b'}>Home</Link>
             <Link to="/services" style={{ fontWeight: 500, fontSize: '0.9rem', color: '#64748b', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#3b6cf4'} onMouseLeave={e => e.target.style.color = '#64748b'}>Services</Link>
 
