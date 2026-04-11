@@ -160,6 +160,7 @@ const Register = () => {
           await api.put(`/services/${data.serviceId}/image`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         } catch (imgErr) {
           console.warn('Image upload failed but account created:', imgErr.message);
+        }
       }
 
       window.location.href = role === 'provider' ? '/dashboard' : '/';
