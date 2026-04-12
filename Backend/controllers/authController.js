@@ -6,39 +6,48 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 // ── OTP Email Sender ────────────────────────────────────────────────────────────
 const sendOtpEmail = async (email, name, otp) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-  });
-  await transporter.sendMail({
-    from: `"SmartLocal ⚡" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Your SmartLocal Sign-In Verification Code',
-    html: `
-      <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4ff;padding:32px 16px;border-radius:20px">
-        <div style="text-align:center;margin-bottom:24px">
-          <span style="font-size:28px;font-weight:900;color:#3b6cf4">Smart<span style="color:#7c3aed">Local</span> ⚡</span>
-        </div>
-        <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(59,108,244,0.12)">
-          <p style="font-size:16px;color:#0f172a;margin:0 0 8px">Hi <strong>${name}</strong>,</p>
-          <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 28px">
-            We received a Google sign-in request for your SmartLocal account.<br>
-            Use the verification code below to complete your sign-in.
-          </p>
-          <div style="text-align:center;margin:0 0 28px">
-            <div style="display:inline-block;background:linear-gradient(135deg,#3b6cf4,#7c3aed);border-radius:14px;padding:20px 40px">
-              <span style="font-size:40px;font-weight:900;color:white;letter-spacing:10px;font-family:monospace">${otp}</span>
-            </div>
-            <p style="color:#94a3b8;font-size:12px;margin:12px 0 0">⏱ This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+      connectionTimeout: 10000,
+    });
+    
+    // Fire-and-forget to prevent UI buffering issues in production if SMTP stalls
+    transporter.sendMail({
+      from: `"SmartLocal ⚡" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your SmartLocal Sign-In Verification Code',
+      html: `
+        <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4ff;padding:32px 16px;border-radius:20px">
+          <div style="text-align:center;margin-bottom:24px">
+            <span style="font-size:28px;font-weight:900;color:#3b6cf4">Smart<span style="color:#7c3aed">Local</span> ⚡</span>
           </div>
-          <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
-          <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0">
-            If you didn't request this, you can safely ignore this email. Your account is secure.
-          </p>
+          <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(59,108,244,0.12)">
+            <p style="font-size:16px;color:#0f172a;margin:0 0 8px">Hi <strong>${name}</strong>,</p>
+            <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 28px">
+              We received a Google sign-in request for your SmartLocal account.<br>
+              Use the verification code below to complete your sign-in.
+            </p>
+            <div style="text-align:center;margin:0 0 28px">
+              <div style="display:inline-block;background:linear-gradient(135deg,#3b6cf4,#7c3aed);border-radius:14px;padding:20px 40px">
+                <span style="font-size:40px;font-weight:900;color:white;letter-spacing:10px;font-family:monospace">${otp}</span>
+              </div>
+              <p style="color:#94a3b8;font-size:12px;margin:12px 0 0">⏱ This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
+            </div>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+            <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0">
+              If you didn't request this, you can safely ignore this email. Your account is secure.
+            </p>
+          </div>
         </div>
-      </div>
-    `,
-  });
+      `,
+    })
+    .then(() => console.log('Auth OTP sent to', email))
+    .catch(err => console.error('Error sending Auth OTP:', err));
+  } catch (err) {
+    console.error('Error configuring Auth OTP email transport:', err);
+  }
 };
 
 // Generate JWT
@@ -56,6 +65,7 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    connectionTimeout: 10000,
   });
 };
 

@@ -103,7 +103,7 @@ const requestCompletion = async (req, res) => {
     const emailSubject = `Work Completion OTP for ${serviceName}`;
     const emailText = `Hello ${customer.name},\n\nYour service provider ${providerName} has requested to complete your booking for "${serviceName}".\n\nYour Work Completion OTP is: ${otp}\n\nPlease share this OTP with the provider only if the work has been completed to your satisfaction.\n\nThank you,\nSmart Local Service Finder Team`;
 
-    // 1. Send via Email
+    // 1. Send via Email (Fire-and-forget in background to prevent hanging)
     try {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -111,17 +111,21 @@ const requestCompletion = async (req, res) => {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
         },
+        connectionTimeout: 10000, // 10s connection timeout
       });
 
-      await transporter.sendMail({
+      // Do NOT await, so the request doesn't hang if SMTP is slow/blocked
+      transporter.sendMail({
         from: `"Smart Local Service Finder" <${process.env.EMAIL_USER}>`,
         to: customer.email,
         subject: emailSubject,
         text: emailText,
-      });
-      console.log(`Completion OTP sent via email to ${customer.email}`);
+      })
+      .then(() => console.log(`Completion OTP sent via email to ${customer.email}`))
+      .catch(emailErr => console.error('Error sending completion OTP email:', emailErr));
+      
     } catch (emailErr) {
-      console.error('Error sending completion OTP email:', emailErr);
+      console.error('Error with email configuration:', emailErr);
     }
 
     // Real-time: notify the customer's socket room
