@@ -106,9 +106,9 @@ const requestCompletion = async (req, res) => {
     // 1. Send via Email (Fire-and-forget in background to prevent hanging)
     try {
       const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // true for 465, false for other ports
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: process.env.SMTP_PORT || 465,
+        secure: process.env.SMTP_PORT == 465, // true for 465, false for 2525
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,

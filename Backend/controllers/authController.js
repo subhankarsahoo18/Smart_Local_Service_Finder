@@ -8,9 +8,9 @@ const nodemailer = require('nodemailer');
 const sendOtpEmail = async (email, name, otp) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: process.env.SMTP_PORT || 465,
+      secure: process.env.SMTP_PORT == 465, // true for port 465, false for port 2525/587
       auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
       connectionTimeout: 10000,
       tls: {
@@ -65,9 +65,9 @@ const generateToken = (id) => {
 // Nodemailer transporter (Gmail SMTP)
 const createTransporter = () => {
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: process.env.SMTP_PORT || 465,
+    secure: process.env.SMTP_PORT == 465, // true for port 465, false for port 2525/587
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
