@@ -1,6 +1,12 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+
+// FORCE IPv4 RESOLUTION (Prevents IPv6 ENETUNREACH errors in production for Gmail/Cloudinary)
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
