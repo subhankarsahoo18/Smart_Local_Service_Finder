@@ -8,9 +8,14 @@ const nodemailer = require('nodemailer');
 const sendOtpEmail = async (email, name, otp) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
       connectionTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false
+      }
     });
     
     // Fire-and-forget to prevent UI buffering issues in production if SMTP stalls
@@ -60,12 +65,17 @@ const generateToken = (id) => {
 // Nodemailer transporter (Gmail SMTP)
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
     connectionTimeout: 10000,
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 };
 
