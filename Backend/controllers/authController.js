@@ -3,56 +3,41 @@ const Service = require('../models/Service');
 const Otp = require('../models/Otp');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const sendEmail = require('../utils/sendEmail');
 // ── OTP Email Sender ────────────────────────────────────────────────────────────
 const sendOtpEmail = async (email, name, otp) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: process.env.SMTP_PORT || 465,
-      secure: process.env.SMTP_PORT == 465, // true for port 465, false for port 2525/587
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-      connectionTimeout: 10000,
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
-    
-    // Fire-and-forget to prevent UI buffering issues in production if SMTP stalls
-    transporter.sendMail({
-      from: `"SmartLocal ⚡" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your SmartLocal Sign-In Verification Code',
-      html: `
-        <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4ff;padding:32px 16px;border-radius:20px">
-          <div style="text-align:center;margin-bottom:24px">
-            <span style="font-size:28px;font-weight:900;color:#3b6cf4">Smart<span style="color:#7c3aed">Local</span> ⚡</span>
+  const html = `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4ff;padding:32px 16px;border-radius:20px">
+      <div style="text-align:center;margin-bottom:24px">
+        <span style="font-size:28px;font-weight:900;color:#3b6cf4">Smart<span style="color:#7c3aed">Local</span> ⚡</span>
+      </div>
+      <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(59,108,244,0.12)">
+        <p style="font-size:16px;color:#0f172a;margin:0 0 8px">Hi <strong>${name}</strong>,</p>
+        <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 28px">
+          We received a sign-in request for your SmartLocal account.<br>
+          Use the verification code below to complete your sign-in.
+        </p>
+        <div style="text-align:center;margin:0 0 28px">
+          <div style="display:inline-block;background:linear-gradient(135deg,#3b6cf4,#7c3aed);border-radius:14px;padding:20px 40px">
+            <span style="font-size:40px;font-weight:900;color:white;letter-spacing:10px;font-family:monospace">${otp}</span>
           </div>
-          <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(59,108,244,0.12)">
-            <p style="font-size:16px;color:#0f172a;margin:0 0 8px">Hi <strong>${name}</strong>,</p>
-            <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 28px">
-              We received a Google sign-in request for your SmartLocal account.<br>
-              Use the verification code below to complete your sign-in.
-            </p>
-            <div style="text-align:center;margin:0 0 28px">
-              <div style="display:inline-block;background:linear-gradient(135deg,#3b6cf4,#7c3aed);border-radius:14px;padding:20px 40px">
-                <span style="font-size:40px;font-weight:900;color:white;letter-spacing:10px;font-family:monospace">${otp}</span>
-              </div>
-              <p style="color:#94a3b8;font-size:12px;margin:12px 0 0">⏱ This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
-            </div>
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
-            <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0">
-              If you didn't request this, you can safely ignore this email. Your account is secure.
-            </p>
-          </div>
+          <p style="color:#94a3b8;font-size:12px;margin:12px 0 0">⏱ This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
         </div>
-      `,
-    })
-    .then(() => console.log('Auth OTP sent to', email))
-    .catch(err => console.error('Error sending Auth OTP:', err));
-  } catch (err) {
-    console.error('Error configuring Auth OTP email transport:', err);
-  }
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+        <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0">
+          If you didn't request this, you can safely ignore this email. Your account is secure.
+        </p>
+      </div>
+    </div>
+  `;
+
+  sendEmail({
+    to: email,
+    toName: name,
+    subject: 'Your SmartLocal Sign-In Verification Code',
+    text: `Hi ${name}, your SmartLocal verification code is: ${otp}. It expires in 10 minutes.`,
+    html,
+  }).catch(err => console.error('[Auth OTP] Email send error:', err.message));
 };
 
 // Generate JWT
@@ -62,22 +47,7 @@ const generateToken = (id) => {
   });
 };
 
-// Nodemailer transporter (Gmail SMTP)
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: process.env.SMTP_PORT || 465,
-    secure: process.env.SMTP_PORT == 465, // true for port 465, false for port 2525/587
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    connectionTimeout: 10000,
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-};
+// createTransporter removed — all emails now go through utils/sendEmail.js
 
 // @desc    Send OTP to email for registration verification
 // @route   POST /api/auth/send-register-otp
@@ -397,43 +367,43 @@ const forgotPassword = async (req, res) => {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const resetUrl = `${frontendUrl}/reset-password/${user._id}/${resetToken}`;
 
-    // Send email
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: `"SmartLocal" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject: 'Password Reset Request - SmartLocal',
-      html: `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; background: #f8faff; border-radius: 16px; overflow: hidden; border: 1px solid #e2eaff;">
-          <div style="background: linear-gradient(135deg, #3b6cf4, #7c3aed); padding: 32px 40px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 800;">⚡ SmartLocal</h1>
-            <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 14px;">Smart Local Service Finder</p>
-          </div>
-          <div style="padding: 36px 40px;">
-            <h2 style="color: #0f172a; font-size: 20px; margin: 0 0 12px;">Reset Your Password</h2>
-            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
-              Hi <strong>${user.name}</strong>,<br/><br/>
-              We received a request to reset your SmartLocal password. Click the button below to create a new password. This link is valid for <strong>15 minutes</strong>.
-            </p>
-            <div style="text-align: center; margin: 28px 0;">
-              <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b6cf4, #2550d0); color: white; text-decoration: none; padding: 14px 36px; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 15px rgba(59,108,244,0.35);">
-                Reset Password
-              </a>
-            </div>
-            <p style="color: #94a3b8; font-size: 13px; line-height: 1.5; margin: 0;">
-              If you didn't request this, you can safely ignore this email. Your password won't change.<br/><br/>
-              Or copy this link if the button doesn't work:<br/>
-              <span style="color: #3b6cf4; word-break: break-all; font-size: 12px;">${resetUrl}</span>
-            </p>
-          </div>
-          <div style="background: #f1f5f9; padding: 16px 40px; text-align: center;">
-            <p style="color: #94a3b8; font-size: 12px; margin: 0;">© 2025 SmartLocal. All rights reserved.</p>
-          </div>
+    // Send email via Brevo HTTP API (or SMTP fallback)
+    const resetHtml = `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; background: #f8faff; border-radius: 16px; overflow: hidden; border: 1px solid #e2eaff;">
+        <div style="background: linear-gradient(135deg, #3b6cf4, #7c3aed); padding: 32px 40px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 800;">⚡ SmartLocal</h1>
+          <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 14px;">Smart Local Service Finder</p>
         </div>
-      `,
-    };
+        <div style="padding: 36px 40px;">
+          <h2 style="color: #0f172a; font-size: 20px; margin: 0 0 12px;">Reset Your Password</h2>
+          <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
+            Hi <strong>${user.name}</strong>,<br/><br/>
+            We received a request to reset your SmartLocal password. Click the button below to create a new password. This link is valid for <strong>15 minutes</strong>.
+          </p>
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b6cf4, #2550d0); color: white; text-decoration: none; padding: 14px 36px; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 15px rgba(59,108,244,0.35);">
+              Reset Password
+            </a>
+          </div>
+          <p style="color: #94a3b8; font-size: 13px; line-height: 1.5; margin: 0;">
+            If you didn't request this, you can safely ignore this email. Your password won't change.<br/><br/>
+            Or copy this link if the button doesn't work:<br/>
+            <span style="color: #3b6cf4; word-break: break-all; font-size: 12px;">${resetUrl}</span>
+          </p>
+        </div>
+        <div style="background: #f1f5f9; padding: 16px 40px; text-align: center;">
+          <p style="color: #94a3b8; font-size: 12px; margin: 0;">© 2025 SmartLocal. All rights reserved.</p>
+        </div>
+      </div>
+    `;
 
-    await transporter.sendMail(mailOptions);
+    await sendEmail({
+      to: user.email,
+      toName: user.name,
+      subject: 'Password Reset Request - SmartLocal',
+      text: `Hi ${user.name}, click here to reset your password: ${resetUrl}`,
+      html: resetHtml,
+    });
     res.json({ message: 'Password reset link sent to your email address' });
   } catch (error) {
     console.error('Forgot Password Error:', error.message);

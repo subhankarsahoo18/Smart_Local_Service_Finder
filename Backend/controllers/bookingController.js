@@ -1,6 +1,6 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
-const nodemailer = require('nodemailer');
+const sendEmail = require('../utils/sendEmail');
 // Helper: generate 4-digit OTP
 const generateOtp = () => String(Math.floor(1000 + Math.random() * 9000));
 
@@ -103,68 +103,40 @@ const requestCompletion = async (req, res) => {
     const emailSubject = `Work Completion OTP for ${serviceName}`;
     const emailText = `Hello ${customer.name},\n\nYour service provider ${providerName} has requested to complete your booking for "${serviceName}".\n\nYour Work Completion OTP is: ${otp}\n\nPlease share this OTP with the provider only if the work has been completed to your satisfaction.\n\nThank you,\nSmart Local Service Finder Team`;
 
-    // 1. Send via Email (Fire-and-forget in background to prevent hanging)
-    try {
-      const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-      const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
-      console.log(`[Completion OTP] Attempting email to ${customer.email} via ${smtpHost}:${smtpPort}`);
-      
-      const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
-        tls: {
-          rejectUnauthorized: false
-        }
-      });
-
-      const htmlBody = `
-        <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4ff;padding:32px 16px;border-radius:20px">
-          <div style="text-align:center;margin-bottom:24px">
-            <span style="font-size:28px;font-weight:900;color:#3b6cf4">Smart<span style="color:#7c3aed">Local</span> ⚡</span>
-          </div>
-          <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(59,108,244,0.12)">
-            <p style="font-size:16px;color:#0f172a;margin:0 0 8px">Hi <strong>${customer.name}</strong>,</p>
-            <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 28px">
-              Your service provider <strong>${providerName}</strong> has completed the work for
-              <strong>"${serviceName}"</strong> and is requesting your confirmation.<br>
-              Share the code below <strong>only if</strong> you are satisfied with the work.
-            </p>
-            <div style="text-align:center;margin:0 0 28px">
-              <div style="display:inline-block;background:linear-gradient(135deg,#3b6cf4,#7c3aed);border-radius:14px;padding:20px 40px">
-                <span style="font-size:40px;font-weight:900;color:white;letter-spacing:10px;font-family:monospace">${otp}</span>
-              </div>
-              <p style="color:#94a3b8;font-size:12px;margin:12px 0 0">⏱ This code expires in <strong>30 minutes</strong>. Do not share it until you're satisfied.</p>
-            </div>
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
-            <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0">
-              If you didn't request this service, please contact our support team.
-            </p>
-          </div>
+    // 1. Send OTP via Email (fire-and-forget so API response isn't delayed)
+    const htmlBody = `
+      <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4ff;padding:32px 16px;border-radius:20px">
+        <div style="text-align:center;margin-bottom:24px">
+          <span style="font-size:28px;font-weight:900;color:#3b6cf4">Smart<span style="color:#7c3aed">Local</span> ⚡</span>
         </div>
-      `;
+        <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(59,108,244,0.12)">
+          <p style="font-size:16px;color:#0f172a;margin:0 0 8px">Hi <strong>${customer.name}</strong>,</p>
+          <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 28px">
+            Your service provider <strong>${providerName}</strong> has completed the work for
+            <strong>"${serviceName}"</strong> and is requesting your confirmation.<br>
+            Share the code below <strong>only if</strong> you are satisfied with the work.
+          </p>
+          <div style="text-align:center;margin:0 0 28px">
+            <div style="display:inline-block;background:linear-gradient(135deg,#3b6cf4,#7c3aed);border-radius:14px;padding:20px 40px">
+              <span style="font-size:40px;font-weight:900;color:white;letter-spacing:10px;font-family:monospace">${otp}</span>
+            </div>
+            <p style="color:#94a3b8;font-size:12px;margin:12px 0 0">⏱ This code expires in <strong>30 minutes</strong>. Do not share it until you're satisfied.</p>
+          </div>
+          <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+          <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0">
+            If you didn't request this service, please contact our support team.
+          </p>
+        </div>
+      </div>
+    `;
 
-      // Do NOT await, so the request doesn't hang if SMTP is slow/blocked
-      transporter.sendMail({
-        from: `"SmartLocal ⚡" <${process.env.EMAIL_USER}>`,
-        to: customer.email,
-        subject: emailSubject,
-        text: emailText,
-        html: htmlBody,
-      })
-      .then(() => console.log(`[Completion OTP] ✅ Email sent successfully to ${customer.email}`))
-      .catch(emailErr => console.error(`[Completion OTP] ❌ Email FAILED to ${customer.email}:`, emailErr.message, emailErr.code));
-      
-    } catch (emailErr) {
-      console.error('[Completion OTP] ❌ Error configuring email transport:', emailErr.message);
-    }
+    sendEmail({
+      to: customer.email,
+      toName: customer.name,
+      subject: emailSubject,
+      text: emailText,
+      html: htmlBody,
+    }).catch(err => console.error('[Completion OTP] Email send error:', err.message));
 
     // Real-time: notify the customer's socket room
     if (booking.customer) {
